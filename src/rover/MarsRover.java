@@ -1,5 +1,6 @@
 package rover;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,14 +8,11 @@ public class MarsRover {
     private static final List<String> VALID_COMMANDS = Arrays.asList("L", "R", "M");
     private static final List<String> DIRECTIONS = Arrays.asList("N", "E", "S", "W");
 
-    private static final int Y = 1;
-    private static final int X = 0;
-
     private String direction;
-    private int[] position;
+    private Point position;
 
     public MarsRover(int startingX, int startingY, String direction) {
-        this.position = new int[]{startingX, startingY};
+        this.position = new Point(startingX, startingY);
         this.direction = direction;
     }
 
@@ -36,18 +34,18 @@ public class MarsRover {
 
     private void move() {
         if (direction.equals("N")) {
-            position[Y] += +1;
+            position.translate(0, 1);
         } else if (direction.equals("S")) {
-            position[Y] += -1;
+            position.translate(0, -1);
         } else if (direction.equals("E")) {
-            position[X] += +1;
+            position.translate(1, 0);
         } else if (direction.equals("W")) {
-            position[X] += -1;
+            position.translate(-1, 0);
         }
     }
 
     private String asString() {
-        return position[X] + " " + position[Y] + " " + direction;
+        return String.format("%.0f %.0f %s", position.getX(), position.getY(), direction);
     }
 
     private void turnLeft() {

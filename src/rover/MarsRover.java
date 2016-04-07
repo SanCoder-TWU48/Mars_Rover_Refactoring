@@ -2,45 +2,71 @@ package rover;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MarsRover {
-    private static final List<String> VALID_COMMANDS = Arrays.asList("L", "R", "M");
-    private static final List<String> DIRECTIONS = Arrays.asList("N", "E", "S", "W");
 
-    private String direction;
+    private static final List<String> VALID_COMMANDS = Arrays.asList("L", "R", "M");
+
+    private static final Map<String, Runnable> SYMBOL_TO_COMMAND;
+
+    static {
+        SYMBOL_TO_COMMAND = new HashMap<>();
+    }
+
+    private Direction direction;
     private Point position;
 
     public MarsRover(int startingX, int startingY, String direction) {
+        SYMBOL_TO_COMMAND.put("M", new Runnable() {
+            @Override
+            public void run() {
+                move();
+            }
+        });
+        SYMBOL_TO_COMMAND.put("L", new Runnable() {
+            @Override
+            public void run() {
+                turnLeft();
+            }
+        });
+        SYMBOL_TO_COMMAND.put("R", new Runnable() {
+            @Override
+            public void run() {
+                turnRight();
+            }
+        });
+
         this.position = new Point(startingX, startingY);
-        this.direction = direction;
+        this.direction = Direction.fromString(direction);
     }
 
     public String run(String input) {
         String[] commands = convertInputIntoCommands(input);
 
         for (String command : commands) {
-            if (command.equals("M")) {
-                move();
-            } else if (command.equals("R")) {
-                turnRight();
-            } else if (command.equals("L")) {
-                turnLeft();
-            }
+            SYMBOL_TO_COMMAND.get(command).run();
         }
 
         return asString();
     }
 
     private void move() {
-        if (direction.equals("N")) {
-            position.translate(0, 1);
-        } else if (direction.equals("S")) {
-            position.translate(0, -1);
-        } else if (direction.equals("E")) {
-            position.translate(1, 0);
-        } else if (direction.equals("W")) {
-            position.translate(-1, 0);
+        switch (direction) {
+            case North:
+                position.translate(0, 1);
+                break;
+            case East:
+                position.translate(1, 0);
+                break;
+            case South:
+                position.translate(0, -1);
+                break;
+            case West:
+                position.translate(-1, 0);
+                break;
         }
     }
 
@@ -49,11 +75,11 @@ public class MarsRover {
     }
 
     private void turnLeft() {
-        direction = DIRECTIONS.get((DIRECTIONS.indexOf(direction) + 3) % DIRECTIONS.size());
+        direction = direction.left();
     }
 
     private void turnRight() {
-        direction = DIRECTIONS.get((DIRECTIONS.indexOf(direction) + 1) % DIRECTIONS.size());
+        direction = direction.right();
     }
 
     private static String[] convertInputIntoCommands(String input) {

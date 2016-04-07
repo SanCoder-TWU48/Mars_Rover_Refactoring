@@ -1,20 +1,22 @@
 package rover;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 public class MarsRover {
-    private static final Map<String, Runnable> SYMBOL_TO_COMMAND;
-
-    static {
-        SYMBOL_TO_COMMAND = new HashMap<>();
-    }
-
+    private static final Map<String, Runnable> SYMBOL_TO_COMMAND = new HashMap<>();
+    private static final Map<Direction, Position> DIRECTION_TO_POINT = new HashMap<>();
     private Direction direction;
-    private Point position;
+    private Position position;
 
     public MarsRover(int startingX, int startingY, String direction) {
+        init();
+
+        this.position = new Position(startingX, startingY);
+        this.direction = Direction.fromString(direction);
+    }
+
+    private void init() {
         SYMBOL_TO_COMMAND.put("M", new Runnable() {
             @Override
             public void run() {
@@ -33,9 +35,10 @@ public class MarsRover {
                 turnRight();
             }
         });
-
-        this.position = new Point(startingX, startingY);
-        this.direction = Direction.fromString(direction);
+        DIRECTION_TO_POINT.put(Direction.North, new Position(0, 1));
+        DIRECTION_TO_POINT.put(Direction.East, new Position(1, 0));
+        DIRECTION_TO_POINT.put(Direction.South, new Position(0, -1));
+        DIRECTION_TO_POINT.put(Direction.West, new Position(-1, 0));
     }
 
     public String run(String input) {
@@ -46,20 +49,7 @@ public class MarsRover {
     }
 
     private void move() {
-        switch (direction) {
-            case North:
-                position.translate(0, 1);
-                break;
-            case East:
-                position.translate(1, 0);
-                break;
-            case South:
-                position.translate(0, -1);
-                break;
-            case West:
-                position.translate(-1, 0);
-                break;
-        }
+        position.moveForward(DIRECTION_TO_POINT.get(direction));
     }
 
     private String asString() {

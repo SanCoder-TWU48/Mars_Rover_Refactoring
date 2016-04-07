@@ -1,13 +1,47 @@
 package rover;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
-
 public enum Direction {
-    North("N"), East("E"), South("S"), West("W");
+    North("N") {
+        @Override
+        public Direction left() {
+            return West;
+        }
 
-    private static final List<Direction> directions = asList(North, East, South, West);
+        @Override
+        public Direction right() {
+            return East;
+        }
+    }, East("E") {
+        @Override
+        public Direction left() {
+            return North;
+        }
+
+        @Override
+        public Direction right() {
+            return South;
+        }
+    }, South("S") {
+        @Override
+        public Direction left() {
+            return East;
+        }
+
+        @Override
+        public Direction right() {
+            return West;
+        }
+    }, West("W") {
+        @Override
+        public Direction left() {
+            return South;
+        }
+
+        @Override
+        public Direction right() {
+            return North;
+        }
+    };
 
     private final String value;
 
@@ -20,18 +54,14 @@ public enum Direction {
         throw new IllegalArgumentException();
     }
 
-    public Direction left() {
-        return directions.get((directions.indexOf(this) + 3) % directions.size());
-    }
-
-    public Direction right() {
-        return directions.get((directions.indexOf(this) + 1) % directions.size());
-    }
-
     @Override
     public String toString() {
         return value;
     }
+
+    public abstract Direction left();
+
+    public abstract Direction right();
 
     Direction(String value) {
         this.value = value;

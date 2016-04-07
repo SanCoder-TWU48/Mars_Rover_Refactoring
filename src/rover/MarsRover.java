@@ -1,15 +1,10 @@
 package rover;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class MarsRover {
-
-    private static final List<String> VALID_COMMANDS = Arrays.asList("L", "R", "M");
-
     private static final Map<String, Runnable> SYMBOL_TO_COMMAND;
 
     static {
@@ -44,12 +39,9 @@ public class MarsRover {
     }
 
     public String run(String input) {
-        String[] commands = convertInputIntoCommands(input);
-
-        for (String command : commands) {
-            SYMBOL_TO_COMMAND.get(command).run();
+        for (Runnable command : convertInputIntoCommands(input)) {
+            command.run();
         }
-
         return asString();
     }
 
@@ -82,21 +74,14 @@ public class MarsRover {
         direction = direction.right();
     }
 
-    private static String[] convertInputIntoCommands(String input) {
-        String[] commandArray = input.split("(?!^)");
-
-        validateCommands(input, commandArray);
-
-        return commandArray;
-    }
-
-    private static void validateCommands(String input, String[] commandArray) {
-        for (String command : commandArray) {
-            if (!VALID_COMMANDS.contains(command)) {
+    private static List<Runnable> convertInputIntoCommands(String input) {
+        List<Runnable> commands = new ArrayList<>();
+        for (String symbol : input.split("(?!^)")) {
+            if (!SYMBOL_TO_COMMAND.containsKey(symbol)) {
                 throw new IllegalArgumentException("Invalid command sequence: " + input);
             }
+            commands.add(SYMBOL_TO_COMMAND.get(symbol));
         }
+        return commands;
     }
-
-
 }
